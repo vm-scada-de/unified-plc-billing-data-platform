@@ -39,7 +39,7 @@ This project is a conceptual Industrial IoT (IIoT) and industrial automation (OT
                                │  ClickHouse  │────────────────────────────────────────────────────────┘
                                │ (Time-Series)│ (Trends)                                               
                                └──────────────┘                                                        
-"""text
+"""
 
 ## Data Processing & Ingestion Layers
 
