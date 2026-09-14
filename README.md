@@ -4,7 +4,7 @@ This project is a conceptual Industrial IoT (IIoT) and industrial automation (OT
 
 ## System Architecture
 
-
+"""text
  ┌──────────────────┐   ┌──────────────────┐   ┌──────────────────┐   ┌──────────────────┐
  │   Vendor DB A    │   │   Vendor DB B    │   │  Siemens S7 PLC  │   │  Other Modbus    │
  │   (PostgreSQL)   │   │     (MS SQL)     │   │     (Tags)       │   │   Devices        │
@@ -39,9 +39,7 @@ This project is a conceptual Industrial IoT (IIoT) and industrial automation (OT
                                │  ClickHouse  │────────────────────────────────────────────────────────┘
                                │ (Time-Series)│ (Trends)                                               
                                └──────────────┘                                                        
- 
-
-
+"""text
 
 ## Data Processing & Ingestion Layers
 
