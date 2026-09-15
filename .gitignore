@@ -1,0 +1,21 @@
+# Python bytecode and cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+
+# Local environment configuration
+.env
+*.env
+secrets.py
+
+# Airflow runtime artifacts & logs
+logs/
+airflow.db
+airflow.cfg
+webserver_config.py
+
+# IDE settings
+.vscode/
+.idea/
