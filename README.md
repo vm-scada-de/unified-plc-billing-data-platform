@@ -5,40 +5,46 @@ This project is a conceptual Industrial IoT (IIoT) and industrial automation (OT
 ## System Architecture
 
 ```text
- ┌──────────────────┐   ┌──────────────────┐   ┌──────────────────┐   ┌──────────────────┐
- │   Vendor DB A    │   │   Vendor DB B    │   │  Siemens S7 PLC  │   │  Other Modbus    │
- │   (PostgreSQL)   │   │     (MS SQL)     │   │     (Tags)       │   │   Devices        │
- └────────┬─────────┘   └────────┬─────────┘   └────────┬────┬────┘   └────────┬────┬────┘
-          │                      │                      │    │                 │    │
-          │ (Meter Points)       │ (Meter Points)       │    │ (Meter Points)  │    │ (Meter Points)
-          ▼                      ▼                      ▼    └────────┐        │    │
-┌────────────────────────────────────────────────────────────┐        │        │    │
-│                      Apache Airflow 3                      │◄───────┴────────┘    │
-│              (Hourly ETL / Meter Points Batch)             │◄─────────────────────┘
-└──────────────────────────────▲─────────────────────────────┘
-                               │
-                               │ ▲ (Read ETL Config)
-                               │ ▼ (Write Processed Meter Points)
-                               │
-┌──────────────────────────────┴─────────────────────────────┐         ┌────────────────────────────────────┐
-│                    PostgreSQL Database                     │────────►│            Web Portal UI           │
-│    (Central Accounting, Master Data & Central Config)      │◄────────│  (Unified Monitoring & Analytics)  │
-└──────────────────────────────┬─────────────────────────────┘ (Reports│                                    │
-                               │                               & Config│    * Accounting & Meter Reports    │
-                               │ (Read Tag & Config)           Changes)│    * Analytical Trends             │
-                               ▼                                       │    * Live Stream Dashboard         │
-                               ┌────────────────────────┐              └─────────────────────▲─────────▲────┘
-                               │ Real-Time Poll Service │                                    │         │
-                               │ (Configurable Archiver)│                                    │         │
-                               └───────┬────────┬───────┘                                    │         │
-                                       │        │                                            │         │
-                        (Telemetry by  │        │ (Live Stream)                              │         │
-                         Tag Settings) │        └────────────────────────────────────────────┘         │
-                                       ▼                                                               │
-                               ┌──────────────┐                                                        │
-                               │  ClickHouse  │────────────────────────────────────────────────────────┘
-                               │ (Time-Series)│ (Trends)                                               
-                               └──────────────┘                                                        
+ ┌──────────────────┐   	 ┌──────────────────┐
+ │   Vendor DB A    │      ┌─│  Siemens S7 PLC  │───┐(Live Tags Polling)
+ │   (PostgreSQL)   │      │ │     (Tags)       │   │
+ └──────────────────┘      │ └──────────────────┘   │
+ ┌──────────────────┐      │ ┌──────────────────┐   │
+ │   Vendor DB B    │      │ │  Other Modbus    │   │
+ │     (MS SQL)     │      │ │  Devices         │─┐ │
+ └────────┬─────────┘      │ └──────────────────┘ │ │
+          │                │ │     				  │ │
+          │ (Meter Points) │ │    				  │ │(Live Tags Polling)
+          ▼                ▼ ▼                    ▼ ▼ 
+┌─────────────────────────────────┐        		┌────────────────────────────────┐
+│     Apache Airflow 3            │				│     Real-Time Poll Service     │
+│(Hourly ETL / Meter Points Batch)│		    ┌──►│    (Configurable Archiver)     │
+└─────────────────────────────────┘         │   └───────────────┬────────┬───────┘
+                      ▲					    │					│     	 │
+					  │					    │					│	  	 │
+                      │ ▲(Read ETL Config)▲ │ ▲(Telemetry by	│ (Live  │(Archive)
+                      │ ▼(Write Processed ▼ │ ▼ Tag Settings)	▼ Stream)│
+					  │		Data)		    │					│		 │
+					  │     			    │					│		 │
+                      ▼                     │           		│		 ▼
+┌─────────────────────────────────┐◄────────┘ 					│ ┌──────────────┐
+│     PostgreSQL Database         │								│ │  ClickHouse  │
+│ (Central Accounting, 			  │								│ │(Time-Series) │
+│  Master Data & Central Config)  │             				│ │     	     │
+└─────────────────────┬───────────┘								│ └──────┬───────┘
+                      │                                  		│		 │
+                      │ ▲(Reports &								│		 │
+                      │ ▼ Config Changes)                		│		 │(Trends)
+                      │                                  		│		 │
+                      ▼                                  		▼		 ▼
+┌────────────────────────────────────────────────────────────────────────────────┐
+│          						Web Portal UI									 │
+│ 						(Unified Monitoring & Analytics)						 │
+│                                 												 │
+│  							* Accounting & Meter Reports						 │
+│  							* Analytical Trends            						 │
+│  							* Live Stream Dashboard        						 │
+└────────────────────────────────────────────────────────────────────────────────┘                                                 
 ```
 
 ## Data Processing & Ingestion Layers
