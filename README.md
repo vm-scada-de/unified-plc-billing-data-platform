@@ -5,6 +5,7 @@ This project is a conceptual Industrial IoT (IIoT) and industrial automation (OT
 ## System Architecture
 
 ```text
+
  ┌──────────────────┐   	 ┌──────────────────┐
  │   Vendor DB A    │      ┌─│  Siemens S7 PLC  │───┐(Live Tags Polling)
  │   (PostgreSQL)   │      │ │     (Tags)       │   │
@@ -45,6 +46,7 @@ This project is a conceptual Industrial IoT (IIoT) and industrial automation (OT
 │  							* Analytical Trends            						 │
 │  							* Live Stream Dashboard        						 │
 └────────────────────────────────────────────────────────────────────────────────┘                                                 
+
 ```
 
 ## Data Processing & Ingestion Layers
